@@ -1,5 +1,7 @@
 # TickTick MCP Server
 
+> ⚠️ **Note**: This project is currently under active development. Features and documentation may be incomplete or subject to change.
+
 MCP Server for the TickTick API, enabling task management, project organization, habit tracking, and more.
 
 ### Features
