@@ -1,20 +1,21 @@
 {
-  "name": "ticktick-mcp-server",
-  "version": "1.0.0",
+  "name": "@alexarevalo9/server-ticktick",
+  "version": "1.1.0",
   "description": "MCP server for using the TickTick API",
   "license": "MIT",
   "author": "Alex Arevalo (https://github.com/alexarevalo9)",
   "type": "module",
   "bin": {
-    "ticktick-mcp-server": "dist/index.js"
+    "mcp-server-ticktick": "./dist/index.js"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc && shx chmod +x dist/*.js",
+    "build": "tsc && shx chmod 755 dist/*.js",
     "prepare": "npm run build",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "publish": "npm publish --access public"
   },
   "keywords": [
     "mcp",

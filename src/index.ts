@@ -9,6 +9,7 @@ import fetch, { Request, Response } from 'node-fetch';
 import console from 'console';
 
 import * as tasks from './operations/tasks.js';
+import * as projects from './operations/projects.js';
 
 import { formatTickTickError, isTickTickError } from './common/errors.js';
 import { VERSION } from './common/version.js';
@@ -40,19 +41,45 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         description: 'Get a specific task by project ID and task ID',
         inputSchema: zodToJsonSchema(tasks.GetTaskByIdsSchema),
       },
+      {
+        name: 'get_user_projects',
+        description: 'Get all user projects',
+        inputSchema: zodToJsonSchema(z.object({})),
+      },
     ],
   };
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
-    if (!request.params.arguments) {
+    const toolsWithoutArguments = ['get_user_projects'];
+
+    if (
+      !request.params.arguments &&
+      !toolsWithoutArguments.includes(request.params.name)
+    ) {
       throw new Error('Arguments are required');
     }
 
-    return {
-      content: [],
-    };
+    switch (request.params.name) {
+      case 'get_task_by_ids': {
+        const args = tasks.GetTaskByIdsSchema.parse(request.params.arguments);
+        const result = await tasks.getTaskByIds(args.projectId, args.taskId);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case 'get_user_projects': {
+        const result = await projects.getUserProjects();
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      default:
+        throw new Error(`Unknown tool name: ${request.params.name}`);
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new Error(`Invalid input: ${JSON.stringify(error.errors)}`);
@@ -67,7 +94,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function runServer() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.info('TickTick MCP Server running on stdio');
+  console.error('TickTick MCP Server running on stdio');
 }
 
 runServer().catch((error) => {

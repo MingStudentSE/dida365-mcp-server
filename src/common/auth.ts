@@ -91,11 +91,11 @@ export class TickTickAuth {
     const state = randomBytes(30).toString('base64url');
     const authorizationUrl = this.getAuthorizationUrl(scopes, state);
 
-    console.log('Opening browser for TickTick authorization...');
-    console.log(
+    console.error('Opening browser for TickTick authorization...');
+    console.error(
       "If the browser doesn't open automatically, please visit this URL:"
     );
-    console.log(authorizationUrl);
+    console.error(authorizationUrl);
 
     await open(authorizationUrl);
 
@@ -117,7 +117,7 @@ export class TickTickAuth {
       });
 
       server.listen(this.port, () => {
-        console.log(
+        console.error(
           `Waiting for authentication callback on port ${this.port}...`
         );
       });
@@ -207,7 +207,7 @@ export class TickTickAuth {
         .join('\n');
 
       fs.writeFileSync(envPath, envString);
-      console.log('Tokens saved to .env file');
+      console.error('Tokens saved to .env file');
     } catch (error) {
       console.error('Error saving tokens to .env file:', error);
     }
