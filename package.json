@@ -1,6 +1,6 @@
 {
-  "name": "@alexarevalo9/server-ticktick",
-  "version": "1.1.0",
+  "name": "@alexarevalo9/mcp-server-ticktick",
+  "version": "1.1.2",
   "description": "MCP server for using the TickTick API",
   "license": "MIT",
   "author": "Alex Arevalo (https://github.com/alexarevalo9)",
@@ -36,5 +36,13 @@
     "@types/node-fetch": "^2.6.12",
     "shx": "^0.4.0",
     "typescript": "^5.8.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexarevalo9/ticktick-mcp-server.git"
+  },
+  "homepage": "https://github.com/alexarevalo9/ticktick-mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/alexarevalo9/ticktick-mcp-server/issues"
   }
 }
