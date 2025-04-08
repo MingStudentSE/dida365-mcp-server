@@ -6,7 +6,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import fetch, { Request, Response } from 'node-fetch';
-import console from 'console';
+import dotenv from 'dotenv';
 
 import * as tasks from './operations/tasks.js';
 import * as projects from './operations/projects.js';
@@ -15,6 +15,8 @@ import { formatTickTickError, isTickTickError } from './common/errors.js';
 import { VERSION } from './common/version.js';
 import z from 'zod';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import console from 'console';
+import { main } from './cli.js';
 
 // If fetch doesn't exist in global scope, add it
 if (!globalThis.fetch) {
@@ -92,6 +94,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 async function runServer() {
+  const initialized = await main();
+
+  if (!initialized.ok) {
+    console.error(initialized.message);
+  }
+
+  dotenv.config();
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('TickTick MCP Server running on stdio');

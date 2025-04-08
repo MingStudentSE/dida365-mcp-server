@@ -83,9 +83,16 @@ export class TickTickAuth {
     return `${authUrl}?${params.toString()}`;
   }
 
-  async startAuthFlow(scopes?: string[]): Promise<string> {
+  async startAuthFlow(scopes?: string[]): Promise<{
+    message: string;
+    ok: boolean;
+  }> {
     if (!this.clientId || !this.clientSecret) {
-      return 'TickTick client ID or client secret is missing. Please set up your credentials first.';
+      return {
+        message:
+          'TickTick client ID or client secret is missing. Please set up your credentials first.',
+        ok: false,
+      };
     }
 
     const state = randomBytes(30).toString('base64url');
@@ -104,16 +111,34 @@ export class TickTickAuth {
         const url = new URL(req.url!, `http://localhost:${this.port}`);
         const code = url.searchParams.get('code');
 
-        if (code) {
-          this.authCode = code;
-          res.writeHead(200, { 'Content-Type': 'text/html' });
-          res.end(successAuthHtml);
-          server.close();
-          this.exchangeCodeForToken().then(resolve);
-        } else {
-          res.writeHead(400, { 'Content-Type': 'text/html' });
+        if (!code) {
+          res.writeHead(400, { 'Content-Type': 'text/html; charset=utf-8' });
           res.end(errorAuthHtml);
+          server.close();
+          resolve({
+            message: 'No authorization code received. Please try again.',
+            ok: false,
+          });
+          return;
         }
+
+        this.authCode = code;
+        this.exchangeCodeForToken()
+          .then((response) => {
+            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end(successAuthHtml(this.tokens?.access_token || ''));
+            server.close();
+            resolve({ message: response, ok: true });
+          })
+          .catch((error) => {
+            res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end(errorAuthHtml);
+            server.close();
+            resolve({
+              message: `Error during token exchange: ${error}`,
+              ok: false,
+            });
+          });
       });
 
       server.listen(this.port, () => {
@@ -124,7 +149,10 @@ export class TickTickAuth {
 
       setTimeout(() => {
         server.close();
-        resolve('Authentication timed out. Please try again.');
+        resolve({
+          message: 'Authentication timed out. Please try again.',
+          ok: false,
+        });
       }, 300000);
     });
   }
