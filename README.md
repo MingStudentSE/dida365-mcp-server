@@ -166,25 +166,87 @@ When creating or updating projects, you can use these properties:
 
 ### OAuth Authentication
 
-[Register your application with TickTick](https://developer.ticktick.com/manage) to obtain API credentials:
+To enable OAuth authentication with TickTick, you'll need to register your app and obtain API credentials:
 
-- Create a developer account at [TickTick Developer Portal](https://developer.ticktick.com/)
+- Create an account on the [TickTick Developer Portal](https://developer.ticktick.com/manage)
 - Register a new application
-- Configure the redirect URL for OAuth flow
-- Copy the Client ID and Client Secret
+- Set the OAuth redirect URL to: http://localhost:8000/callback
+- Copy the generated Client ID (TICKTICK_CLIENT_ID) and Client Secret (TICKTICK_CLIENT_SECRET)
 
-### First-time Authorization
+### First-Time Authorization Flow
 
 When using the TickTick MCP server for the first time:
 
 1. You'll be prompted to authorize the application
 2. A browser window will open with the TickTick login page
 3. After login, you'll be asked to grant permissions
-4. The authorization will be stored for future use
+4. The access token will be displayed in the page
+5. Copy this token and set it as the TICKTICK_ACCESS_TOKEN environment variable
+
+### Re-authentication (Token Expired or First-time Authentication Fails)
+
+If the token expires or the first-time authentication doesn't work, follow the steps below to re-authenticate using `npx`:
+
+1. Set the environment variables with your **Client ID** and **Client Secret**. If your credentials contain special characters, use **single quotes** to prevent zsh or bash from interpreting them, or use a `.env` file.
+
+   #### Option 1: Using `export` and single quotes (for special characters):
+
+   ```bash
+   export TICKTICK_CLIENT_ID='<YOUR_CLIENT_ID>'
+   export TICKTICK_CLIENT_SECRET='<YOUR_CLIENT_SECRET>'
+   ```
+
+   #### Option 2: Using a .env file:
+
+   1. Create a .env file in your project directory:
+
+   ```bash
+   TICKTICK_CLIENT_ID="<YOUR_CLIENT_ID>"
+   TICKTICK_CLIENT_SECRET="<YOUR_CLIENT_SECRET>"
+   ```
+
+   2. Load the environment variables by running:
+
+   ```bash
+   source .env
+   ```
+
+2. Once the environment variables are set, run the following npx command to trigger authentication:
+
+   ```bash
+   npx @alexarevalo9/mcp-server-ticktick ticktick-auth
+   ```
+
+   This will:
+
+   - Prompt you to reauthorize the application
+   - Open a browser window for login
+   - Allow you to grant the requested permissions again
+   - Display the new **access token**
+
+3. After authentication, copy the new access token and set it as the TICKTICK_ACCESS_TOKEN environment variable to continue using the application.
 
 ### Usage with Claude Desktop
 
 To use this with Claude Desktop, add the following to your `claude_desktop_config.json`:
+
+### NPX
+
+```json
+{
+  "mcpServers": {
+    "ticktick": {
+      "command": "npx",
+      "args": ["-y", "@alexarevalo9/mcp-server-ticktick"],
+      "env": {
+        "TICKTICK_CLIENT_ID": "<YOUR_CLIENT_ID>",
+        "TICKTICK_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
+        "TICKTICK_ACCESS_TOKEN": "<YOUR_ACCESS_TOKEN>"
+      }
+    }
+  }
+}
+```
 
 #### Docker
 
@@ -201,28 +263,14 @@ To use this with Claude Desktop, add the following to your `claude_desktop_confi
         "TICKTICK_CLIENT_ID",
         "-e",
         "TICKTICK_CLIENT_SECRET",
+        "-e",
+        "TICKTICK_ACCESS_TOKEN",
         "mcp/ticktick"
       ],
       "env": {
         "TICKTICK_CLIENT_ID": "<YOUR_CLIENT_ID>",
-        "TICKTICK_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>"
-      }
-    }
-  }
-}
-```
-
-### NPX
-
-```json
-{
-  "mcpServers": {
-    "ticktick": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-ticktick"],
-      "env": {
-        "TICKTICK_CLIENT_ID": "<YOUR_CLIENT_ID>",
-        "TICKTICK_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>"
+        "TICKTICK_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
+        "TICKTICK_ACCESS_TOKEN": "<YOUR_ACCESS_TOKEN>"
       }
     }
   }
