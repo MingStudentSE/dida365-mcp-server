@@ -6,7 +6,8 @@
   "author": "Alex Arevalo (https://github.com/alexarevalo9)",
   "type": "module",
   "bin": {
-    "mcp-server-ticktick": "./dist/index.js"
+    "mcp-server-ticktick": "./dist/index.js",
+    "ticktick-auth": "./dist/cli.js"
   },
   "files": [
     "dist"

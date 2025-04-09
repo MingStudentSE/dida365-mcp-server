@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { TickTickAuth } from './common/auth.js';
 import dotenv from 'dotenv';
 
@@ -46,6 +47,9 @@ export async function main(): Promise<{
   return result;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch(console.error);
+if (
+  import.meta.url === `file://${process.argv[1]}` ||
+  process.argv[1].includes('ticktick-auth')
+) {
+  main().catch(console.log);
 }
