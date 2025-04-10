@@ -5,7 +5,7 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { zodToJsonSchema } from 'zod-to-json-schema';
-import fetch, { Request, Response } from 'node-fetch';
+import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 
 import * as tasks from './operations/tasks.js';
@@ -39,14 +39,34 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
-        name: 'get_task_by_ids',
-        description: 'Get a specific task by project ID and task ID',
-        inputSchema: zodToJsonSchema(tasks.GetTaskByIdsSchema),
-      },
-      {
         name: 'get_user_projects',
         description: 'Get all user projects',
         inputSchema: zodToJsonSchema(z.object({})),
+      },
+      {
+        name: 'get_project_by_id',
+        description: 'Get a project by ID',
+        inputSchema: zodToJsonSchema(projects.ProjectIdOptionsSchema),
+      },
+      {
+        name: 'get_project_with_data',
+        description: 'Get a project with its tasks and columns',
+        inputSchema: zodToJsonSchema(projects.ProjectIdOptionsSchema),
+      },
+      {
+        name: 'create_project',
+        description: 'Create a new project',
+        inputSchema: zodToJsonSchema(projects.CreateProjectOptionsSchema),
+      },
+      {
+        name: 'update_project',
+        description: 'Update an existing project',
+        inputSchema: zodToJsonSchema(projects.UpdateProjectOptionsSchema),
+      },
+      {
+        name: 'delete_project',
+        description: 'Delete a project',
+        inputSchema: zodToJsonSchema(projects.ProjectIdOptionsSchema),
       },
     ],
   };
@@ -76,6 +96,58 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const result = await projects.getUserProjects();
         return {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case 'get_project_by_id': {
+        const args = projects.ProjectIdOptionsSchema.parse(
+          request.params.arguments
+        );
+        const result = await projects.getProjectById(args.projectId);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case 'get_project_with_data': {
+        const args = projects.ProjectIdOptionsSchema.parse(
+          request.params.arguments
+        );
+        const result = await projects.getProjectWithData(args.projectId);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case 'create_project': {
+        const args = projects.CreateProjectOptionsSchema.parse(
+          request.params.arguments
+        );
+        const result = await projects.createProject(args);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case 'update_project': {
+        const args = projects.UpdateProjectOptionsSchema.parse(
+          request.params.arguments
+        );
+        const result = await projects.updateProject(args);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case 'delete_project': {
+        const args = projects.ProjectIdOptionsSchema.parse(
+          request.params.arguments
+        );
+
+        await projects.deleteProject(args.projectId);
+
+        return {
+          content: [{ type: 'text', text: 'Project deleted successfully' }],
         };
       }
 

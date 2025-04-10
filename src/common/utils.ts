@@ -41,3 +41,14 @@ export async function ticktickRequest(
 
   return responseBody;
 }
+
+export function isValidHexColor(color: string): boolean {
+  return /^#[0-9A-Fa-f]{6}$/.test(color);
+}
+
+export function getFormattedColor(color?: string): string {
+  if (color && isValidHexColor(color)) {
+    return color;
+  }
+  return '#4772FA';
+}

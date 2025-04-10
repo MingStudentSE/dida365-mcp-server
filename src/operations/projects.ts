@@ -1,28 +1,132 @@
-import { z } from 'zod';
-import { ticktickRequest } from '../common/utils.js';
+import { undefined, z } from 'zod';
+import { getFormattedColor, ticktickRequest } from '../common/utils.js';
+import { TICKTICK_API_URL } from '../common/urls.js';
+import { TickTickProjectSchema, TickTickTaskSchema } from '../common/types.js';
 
-export const TickTickGetUserProjectsResponseSchema = z.array(
-  z.object({
-    id: z.string(),
-    name: z.string(),
-    color: z.string().optional(),
-    sortOrder: z.number().optional(),
-    kind: z.string().optional(),
-    closed: z.boolean().optional(),
-    groupId: z.string().optional(),
-    viewMode: z.string().optional(),
-    permission: z.string().optional(),
-  })
-);
+export const GetUserProjectsResponseSchema = z.array(TickTickProjectSchema);
 
-export type TickTickGetUserProjectsResponse = z.infer<
-  typeof TickTickGetUserProjectsResponseSchema
->;
+export const GetProjectWithDataResponseSchema = z.object({
+  project: TickTickProjectSchema,
+  tasks: z.array(TickTickTaskSchema),
+  columns: z
+    .array(
+      z
+        .object({
+          id: z.string().optional(),
+          projectId: z.string().optional(),
+          name: z.string().optional(),
+          sortOrder: z.number().optional(),
+        })
+        .optional()
+    )
+    .optional(),
+});
 
-export async function getUserProjects() {
-  const url = `https://api.ticktick.com/open/v1/project`;
+export const ProjectIdOptionsSchema = z.object({
+  projectId: z.string().describe('Project identifier'),
+});
 
-  const response = await ticktickRequest(url);
+export const CreateProjectOptionsSchema = z.object({
+  name: z.string().describe('Project name'),
+  color: z.string().default('#4772FA').optional().describe('Project color'),
+  viewMode: z
+    .enum(['list', 'kanban', 'timeline'])
+    .default('list')
+    .optional()
+    .describe('View mode'),
+  kind: z
+    .enum(['TASK', 'NOTE'])
+    .default('TASK')
+    .optional()
+    .describe('Project kind'),
+});
 
-  return TickTickGetUserProjectsResponseSchema.parse(response);
+export const UpdateProjectOptionsSchema = z.object({
+  projectId: z.string().describe('Project identifier'),
+  name: z.string().optional().describe('Project name'),
+  color: z.string().optional().describe('Project color'),
+  sortOrder: z.number().optional().describe('Project sort order'),
+  viewMode: z
+    .enum(['list', 'kanban', 'timeline'])
+    .optional()
+    .describe('View mode'),
+  kind: z.enum(['TASK', 'NOTE']).optional().describe('Project kind'),
+});
+
+type CreateProjectParams = z.infer<typeof CreateProjectOptionsSchema>;
+
+type UpdateProjectParams = z.infer<typeof UpdateProjectOptionsSchema>;
+
+export async function getUserProjects(): Promise<
+  z.infer<typeof GetUserProjectsResponseSchema>
+> {
+  const response = await ticktickRequest(`${TICKTICK_API_URL}/project`);
+
+  return GetUserProjectsResponseSchema.parse(response);
+}
+
+export async function getProjectById(
+  projectId: string
+): Promise<z.infer<typeof TickTickProjectSchema>> {
+  const response = await ticktickRequest(
+    `${TICKTICK_API_URL}/project/${projectId}`
+  );
+
+  return TickTickProjectSchema.parse(response);
+}
+
+export async function getProjectWithData(
+  projectId: string
+): Promise<z.infer<typeof GetProjectWithDataResponseSchema>> {
+  const response = await ticktickRequest(
+    `${TICKTICK_API_URL}/project/${projectId}/data`
+  );
+
+  return GetProjectWithDataResponseSchema.parse(response);
+}
+
+export async function createProject(
+  params: CreateProjectParams
+): Promise<z.infer<typeof TickTickProjectSchema>> {
+  const { name, color, viewMode, kind } = params;
+
+  const response = await ticktickRequest(`${TICKTICK_API_URL}/project`, {
+    method: 'POST',
+    body: {
+      name,
+      color: getFormattedColor(color),
+      viewMode,
+      kind,
+    },
+  });
+
+  return TickTickProjectSchema.parse(response);
+}
+
+export async function updateProject(
+  params: UpdateProjectParams
+): Promise<z.infer<typeof TickTickProjectSchema>> {
+  const { projectId, name, color, sortOrder, viewMode, kind } = params;
+
+  const response = await ticktickRequest(
+    `${TICKTICK_API_URL}/project/${projectId}`,
+    {
+      method: 'POST',
+      body: {
+        name,
+        color: color ? getFormattedColor(color) : undefined,
+        sortOrder,
+        viewMode,
+        kind,
+      },
+    }
+  );
+
+  return TickTickProjectSchema.parse(response);
+}
+
+export async function deleteProject(projectId: string): Promise<void> {
+  await ticktickRequest(`${TICKTICK_API_URL}/project/${projectId}`, {
+    method: 'DELETE',
+  });
 }
