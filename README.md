@@ -214,7 +214,7 @@ If the token expires or the first-time authentication doesn't work, follow the s
 2. Once the environment variables are set, run the following npx command to trigger authentication:
 
    ```bash
-   npx @alexarevalo9/mcp-server-ticktick ticktick-auth
+   npx @alexarevalo.ia/mcp-server-ticktick ticktick-auth
    ```
 
    This will:
@@ -237,7 +237,7 @@ To use this with Claude Desktop, add the following to your `claude_desktop_confi
   "mcpServers": {
     "ticktick": {
       "command": "npx",
-      "args": ["-y", "@alexarevalo9/mcp-server-ticktick"],
+      "args": ["-y", "@alexarevalo.ai/mcp-server-ticktick"],
       "env": {
         "TICKTICK_CLIENT_ID": "<YOUR_CLIENT_ID>",
         "TICKTICK_CLIENT_SECRET": "<YOUR_CLIENT_SECRET>",
