@@ -43,3 +43,25 @@ export const TickTickTaskSchema = z.object({
     )
     .optional(),
 });
+
+export const TickTickCheckListItemSchema = z.object({
+  title: z.string().describe('Subtask item title'),
+  startDate: z
+    .string()
+    .optional()
+    .describe(`Subtask item start date in "yyyy-MM-dd'T'HH:mm:ssZ" format`),
+  isAllDay: z.boolean().optional().describe('Is all day subtask item'),
+  sortOrder: z.number().optional().describe('Subtask item sort order'),
+  timeZone: z
+    .string()
+    .optional()
+    .describe('Subtask item time zone. Example: "America/Los_Angeles"'),
+  status: z
+    .number()
+    .optional()
+    .describe('The completion status of subtask. Normal: 0, Completed: 1'),
+  completedTime: z
+    .string()
+    .optional()
+    .describe(`Subtask item completed time in "yyyy-MM-dd'T'HH:mm:ssZ" format`),
+});

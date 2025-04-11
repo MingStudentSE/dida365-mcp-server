@@ -88,15 +88,13 @@ export async function getProjectWithData(
 export async function createProject(
   params: CreateProjectParams
 ): Promise<z.infer<typeof TickTickProjectSchema>> {
-  const { name, color, viewMode, kind } = params;
+  const { color, ...rest } = params;
 
   const response = await ticktickRequest(`${TICKTICK_API_URL}/project`, {
     method: 'POST',
     body: {
-      name,
       color: getFormattedColor(color),
-      viewMode,
-      kind,
+      ...rest,
     },
   });
 
@@ -106,18 +104,15 @@ export async function createProject(
 export async function updateProject(
   params: UpdateProjectParams
 ): Promise<z.infer<typeof TickTickProjectSchema>> {
-  const { projectId, name, color, sortOrder, viewMode, kind } = params;
+  const { color, projectId, ...rest } = params;
 
   const response = await ticktickRequest(
     `${TICKTICK_API_URL}/project/${projectId}`,
     {
       method: 'POST',
       body: {
-        name,
         color: color ? getFormattedColor(color) : undefined,
-        sortOrder,
-        viewMode,
-        kind,
+        ...rest,
       },
     }
   );

@@ -68,6 +68,31 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         description: 'Delete a project',
         inputSchema: zodToJsonSchema(projects.ProjectIdOptionsSchema),
       },
+      {
+        name: 'get_task_by_ids',
+        description: 'Get a task by ProjectId and TaskId',
+        inputSchema: zodToJsonSchema(tasks.GetTaskByIdsOptionsSchema),
+      },
+      {
+        name: 'create_task',
+        description: 'Create a new task',
+        inputSchema: zodToJsonSchema(tasks.CreateTaskOptionsSchema),
+      },
+      {
+        name: 'update_task',
+        description: 'Update an existing task',
+        inputSchema: zodToJsonSchema(tasks.UpdateTaskOptionsSchema),
+      },
+      {
+        name: 'complete_task',
+        description: 'Complete a task',
+        inputSchema: zodToJsonSchema(tasks.TasksIdsOptionsSchema),
+      },
+      {
+        name: 'delete_task',
+        description: 'Delete a task',
+        inputSchema: zodToJsonSchema(tasks.TasksIdsOptionsSchema),
+      },
     ],
   };
 });
@@ -84,16 +109,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     switch (request.params.name) {
-      case 'get_task_by_ids': {
-        const args = tasks.GetTaskByIdsSchema.parse(request.params.arguments);
-        const result = await tasks.getTaskByIds(args.projectId, args.taskId);
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-        };
-      }
-
       case 'get_user_projects': {
         const result = await projects.getUserProjects();
+
         return {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
@@ -103,7 +121,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const args = projects.ProjectIdOptionsSchema.parse(
           request.params.arguments
         );
+
         const result = await projects.getProjectById(args.projectId);
+
         return {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
@@ -113,7 +133,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const args = projects.ProjectIdOptionsSchema.parse(
           request.params.arguments
         );
+
         const result = await projects.getProjectWithData(args.projectId);
+
         return {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
@@ -123,7 +145,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const args = projects.CreateProjectOptionsSchema.parse(
           request.params.arguments
         );
+
         const result = await projects.createProject(args);
+
         return {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
@@ -133,7 +157,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const args = projects.UpdateProjectOptionsSchema.parse(
           request.params.arguments
         );
+
         const result = await projects.updateProject(args);
+
         return {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
@@ -148,6 +174,66 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         return {
           content: [{ type: 'text', text: 'Project deleted successfully' }],
+        };
+      }
+
+      case 'get_task_by_ids': {
+        const args = tasks.GetTaskByIdsOptionsSchema.parse(
+          request.params.arguments
+        );
+
+        const result = await tasks.getTaskByIds(args);
+
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case 'create_task': {
+        const args = tasks.CreateTaskOptionsSchema.parse(
+          request.params.arguments
+        );
+
+        const result = await tasks.createTask(args);
+
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case 'update_task': {
+        const args = tasks.UpdateTaskOptionsSchema.parse(
+          request.params.arguments
+        );
+
+        const result = await tasks.updateTask(args);
+
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      case 'complete_task': {
+        const args = tasks.TasksIdsOptionsSchema.parse(
+          request.params.arguments
+        );
+
+        await tasks.completeTask(args);
+
+        return {
+          content: [{ type: 'text', text: 'Task completed successfully' }],
+        };
+      }
+
+      case 'delete_task': {
+        const args = tasks.TasksIdsOptionsSchema.parse(
+          request.params.arguments
+        );
+
+        await tasks.deleteTask(args);
+
+        return {
+          content: [{ type: 'text', text: 'Task deleted successfully' }],
         };
       }
 
