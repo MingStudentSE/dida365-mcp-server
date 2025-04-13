@@ -1,6 +1,6 @@
 {
   "name": "@alexarevalo.ai/mcp-server-ticktick",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "MCP server for using the TickTick API",
   "license": "MIT",
   "author": "Alex Arevalo (https://github.com/alexarevalo9)",
