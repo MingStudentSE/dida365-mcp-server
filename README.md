@@ -183,48 +183,75 @@ When using the TickTick MCP server for the first time:
 4. The access token will be displayed in the page
 5. Copy this token and set it as the TICKTICK_ACCESS_TOKEN environment variable
 
-### Re-authentication (Token Expired or First-time Authentication Fails)
+### Generate Access Token
 
-If the token expires or the first-time authentication doesn't work, follow the steps below to re-authenticate using `npx`:
+When you need to generate a new access token (either for first-time setup or when the token expires), follow these steps:
 
-1. Set the environment variables with your **Client ID** and **Client Secret**. If your credentials contain special characters, use **single quotes** to prevent zsh or bash from interpreting them, or use a `.env` file.
+1. Configure your credentials using one of these methods:
 
-   #### Option 1: Using `export` and single quotes (for special characters):
+   #### Option 1: .env file (Recommended)
 
-   ```bash
-   export TICKTICK_CLIENT_ID='<YOUR_CLIENT_ID>'
-   export TICKTICK_CLIENT_SECRET='<YOUR_CLIENT_SECRET>'
-   ```
-
-   #### Option 2: Using a .env file:
-
-   1. Create a .env file in your project directory:
+   Create a `.env` file in your project root:
 
    ```bash
    TICKTICK_CLIENT_ID="<YOUR_CLIENT_ID>"
    TICKTICK_CLIENT_SECRET="<YOUR_CLIENT_SECRET>"
    ```
 
-   2. Load the environment variables by running:
+   Then load it:
 
    ```bash
    source .env
    ```
 
-2. Once the environment variables are set, run the following npx command to trigger authentication:
+   This method is recommended because:
+
+   - Credentials persist between terminal sessions
+   - Easier to manage multiple configurations
+   - Less prone to shell history leaks
+   - Can be easily backed up (remember to exclude from version control)
+
+   #### Option 2: Terminal Environment Variables
+
+   Use single quotes if your credentials contain special characters. Note that these variables will only persist in your current terminal session:
+
+   ```bash
+   export TICKTICK_CLIENT_ID='<YOUR_CLIENT_ID>'
+   export TICKTICK_CLIENT_SECRET='<YOUR_CLIENT_SECRET>'
+   ```
+
+2. Run the authentication command:
+
+   If using the published package:
 
    ```bash
    npx @alexarevalo.ia/mcp-server-ticktick ticktick-auth
    ```
 
-   This will:
+   If running the MCP server locally:
 
-   - Prompt you to reauthorize the application
-   - Open a browser window for login
-   - Allow you to grant the requested permissions again
-   - Display the new **access token**
+   ```bash
+   npm run start:auth
+   ```
 
-3. After authentication, copy the new access token and set it as the TICKTICK_ACCESS_TOKEN environment variable to continue using the application.
+   The process will:
+
+   - Launch your default browser
+   - Direct you to TickTick's login page
+   - Request necessary permissions
+   - Generate and display your access token
+
+3. Save the access token:
+   ```bash
+   echo "TICKTICK_ACCESS_TOKEN=\"<GENERATED_TOKEN>\"" >> .env
+   source .env
+   ```
+
+> **Security Tips**:
+>
+> - Add `.env` to your `.gitignore` file
+> - Never commit credentials to version control
+> - Access tokens expire after 180 days - you'll need to regenerate them
 
 ### Usage with Claude Desktop
 
