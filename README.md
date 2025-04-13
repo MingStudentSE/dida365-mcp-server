@@ -1,7 +1,5 @@
 # TickTick MCP Server
 
-> ⚠️ **Note**: This project is currently under active development. Features and documentation may be incomplete or subject to change.
-
 MCP Server for the TickTick API, enabling task management, project organization, habit tracking, and more.
 
 ### Features
@@ -21,94 +19,96 @@ MCP Server for the TickTick API, enabling task management, project organization,
    - Inputs:
      - `projectId` (string): Project identifier
      - `taskId` (string): Task identifier
-   - Returns: Complete task details including subtasks
+   - Returns: Task object matching `TickTickTaskSchema`
 
 2. `create_task`
 
    - Create a new task in a project
    - Inputs:
      - `title` (string): Task title
-     - `projectId` (string): Project identifier
-     - `content` (optional string): Task content/description
-     - `desc` (optional string): Description of checklist
-     - `isAllDay` (optional boolean): All day flag
-     - `startDate` (optional string): Start date and time in ISO format
-     - `dueDate` (optional string): Due date and time in ISO format
-     - `timeZone` (optional string): The time zone for dates
-     - `reminders` (optional array): List of reminder triggers
-     - `repeatFlag` (optional string): Recurring rules of task
-     - `priority` (optional integer): Task priority (0-5)
-     - `sortOrder` (optional integer): Task sort order
-     - `items` (optional array): List of subtasks
-   - Returns: Created task details
+     - `projectId` (string): Project id
+     - `content` (optional string): Task content
+     - `desc` (optional string): Task description
+     - `isAllDay` (optional boolean): Is all day task
+     - `startDate` (optional string): Task start date in "yyyy-MM-dd'T'HH:mm:ssZ" format
+     - `dueDate` (optional string): Task due date in "yyyy-MM-dd'T'HH:mm:ssZ" format
+     - `timeZone` (optional string): Task time zone (e.g., "America/Los_Angeles")
+     - `reminders` (optional string[]): List of reminder triggers in iCalendar format
+     - `repeatFlag` (optional string): Task repeat flag in iCalendar format
+     - `priority` (optional number): Task priority (None: 0, Low: 1, Medium: 3, High: 5)
+     - `sortOrder` (optional string): Task sort order
+     - `items` (optional array): List of subtasks with:
+       - `title` (string): Subtask item title
+       - `startDate` (optional string): Subtask date in "yyyy-MM-dd'T'HH:mm:ssZ" format
+       - `isAllDay` (optional boolean): Is all day subtask item
+       - `sortOrder` (optional number): Subtask item sort order
+       - `timeZone` (optional string): Subtask timezone
+       - `status` (optional number): Completion status (Normal: 0, Completed: 1)
+       - `completedTime` (optional string): Completion time in "yyyy-MM-dd'T'HH:mm:ssZ" format
+   - Returns: Created task object matching `TickTickTaskSchema`
 
 3. `update_task`
 
    - Update an existing task
    - Inputs:
-     - `taskId` (string): Task identifier
-     - `id` (string): Task ID
-     - `projectId` (string): Project identifier
-     - `title` (optional string): Task title
-     - `content` (optional string): Task content
-     - `desc` (optional string): Description of checklist
-     - `isAllDay` (optional boolean): All day flag
-     - `startDate` (optional string): Start date and time
-     - `dueDate` (optional string): Due date and time
-     - `timeZone` (optional string): The time zone
-     - `reminders` (optional array): List of reminder triggers
-     - `repeatFlag` (optional string): Recurring rules
-     - `priority` (optional integer): Task priority
-     - `sortOrder` (optional integer): Task sort order
-     - `items` (optional array): List of subtasks
-   - Returns: Updated task details
+     - `taskId` (string): Task identifier - Path
+     - `id` (string): Task identifier - Body
+     - `projectId` (string): Project id
+     - All optional fields from `create_task`
+   - Returns: Updated task object matching `TickTickTaskSchema`
 
 4. `complete_task`
 
    - Mark a task as completed
    - Inputs:
-     - `projectId` (string): Project identifier
      - `taskId` (string): Task identifier
-   - Returns: Success confirmation
+     - `projectId` (string): Project identifier
+   - Returns: void
 
 5. `delete_task`
 
    - Delete a task from a project
    - Inputs:
-     - `projectId` (string): Project identifier
      - `taskId` (string): Task identifier
-   - Returns: Success confirmation
+     - `projectId` (string): Project identifier
+   - Returns: void
 
 6. `get_user_projects`
 
    - Get all projects for the authenticated user
    - Inputs: None
-   - Returns: Array of project details
+   - Returns: Array of project objects matching `TickTickProjectSchema`
 
 7. `get_project_by_id`
 
    - Get a specific project by ID
    - Inputs:
      - `projectId` (string): Project identifier
-   - Returns: Project details
+   - Returns: Project object matching `TickTickProjectSchema`
 
 8. `get_project_with_data`
 
    - Get project details along with tasks and columns
    - Inputs:
      - `projectId` (string): Project identifier
-   - Returns: Project data including tasks and kanban columns
+   - Returns: Object containing:
+     - `project`: Project object matching `TickTickProjectSchema`
+     - `tasks`: Array of task objects matching `TickTickTaskSchema`
+     - `columns`: Optional array of column objects with:
+       - `id` (optional string)
+       - `projectId` (optional string)
+       - `name` (optional string)
+       - `sortOrder` (optional number)
 
 9. `create_project`
 
    - Create a new project
    - Inputs:
      - `name` (string): Project name
-     - `color` (optional string): Color of project (e.g., "#F18181")
-     - `sortOrder` (optional integer): Sort order value
-     - `viewMode` (optional string): View mode ("list", "kanban", "timeline")
-     - `kind` (optional string): Project kind ("TASK", "NOTE")
-   - Returns: Created project details
+     - `color` (optional string): Project color (default: '#4772FA')
+     - `viewMode` (optional string): View mode ('list', 'kanban', 'timeline') (default: 'list')
+     - `kind` (optional string): Project kind ('TASK', 'NOTE') (default: 'TASK')
+   - Returns: Created project object matching `TickTickProjectSchema`
 
 10. `update_project`
 
@@ -116,17 +116,31 @@ MCP Server for the TickTick API, enabling task management, project organization,
     - Inputs:
       - `projectId` (string): Project identifier
       - `name` (optional string): Project name
-      - `color` (optional string): Color of project
-      - `sortOrder` (optional integer): Sort order value
-      - `viewMode` (optional string): View mode
-      - `kind` (optional string): Project kind
-    - Returns: Updated project details
+      - `color` (optional string): Project color
+      - `sortOrder` (optional number): Project sort order
+      - `viewMode` (optional string): View mode ('list', 'kanban', 'timeline')
+      - `kind` (optional string): Project kind ('TASK', 'NOTE')
+    - Returns: Updated project object matching `TickTickProjectSchema`
 
 11. `delete_project`
     - Delete a project
     - Inputs:
       - `projectId` (string): Project identifier
-    - Returns: Success confirmation
+    - Returns: void
+
+## Schema References
+
+- [`TickTickTaskSchema`](src/common/types.ts#L22): Defines the structure for task objects including:
+
+  - Basic task properties (id, title, description)
+  - Dates and time settings
+  - Priority and status
+  - Checklist items and subtasks
+
+- [`TickTickProjectSchema`](src/common/types.ts#L3): Defines the structure for project objects including:
+  - Project identification and naming
+  - Display settings (color, view mode)
+  - Permissions and organization
 
 ## Tasks Properties
 
