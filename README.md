@@ -1,5 +1,7 @@
 # TickTick MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@alexarevalo9/ticktick-mcp-server)](https://smithery.ai/server/@alexarevalo9/ticktick-mcp-server)
+
 MCP Server for the TickTick API, enabling task management, project organization, habit tracking, and more.
 
 ### Features
@@ -317,8 +319,15 @@ To use this with Claude Desktop, add the following to your `claude_desktop_confi
   }
 }
 ```
+### Installing via Smithery
 
-## Build
+To install ticktick-mcp-server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@alexarevalo9/ticktick-mcp-server):
+
+```bash
+npx -y @smithery/cli install @alexarevalo9/ticktick-mcp-server --client claude
+```
+
+### Build
 
 Docker build:
 
