@@ -114,7 +114,7 @@ export async function getTaskByIds(
 ): Promise<z.infer<typeof GetTaskByIdsResponseSchema>> {
   const { projectId, taskId } = GetTaskByIdsOptionsSchema.parse(params);
 
-  const url = `https://api.ticktick.com/open/v1/project/${projectId}/task/${taskId}`;
+  const url = `https://api.dida365.com/open/v1/project/${projectId}/task/${taskId}`;
 
   const response = await ticktickRequest(url);
 
@@ -124,7 +124,7 @@ export async function getTaskByIds(
 export async function createTask(
   params: CreateTaskParams
 ): Promise<z.infer<typeof TickTickTaskSchema>> {
-  const url = `https://api.ticktick.com/open/v1/task`;
+  const url = `https://api.dida365.com/open/v1/task`;
 
   const response = await ticktickRequest(url, {
     method: 'POST',
@@ -141,7 +141,7 @@ export async function updateTask(
 ): Promise<z.infer<typeof TickTickTaskSchema>> {
   const { taskId, id, ...rest } = params;
 
-  const url = `https://api.ticktick.com/open/v1/task/${taskId || id}`;
+  const url = `https://api.dida365.com/open/v1/task/${taskId || id}`;
 
   const response = await ticktickRequest(url, {
     method: 'POST',
@@ -158,7 +158,7 @@ export async function completeTask({
   taskId,
   projectId,
 }: TasksIdsParams): Promise<void> {
-  const url = `https://api.ticktick.com/open/v1/project/${projectId}/task/${taskId}/complete`;
+  const url = `https://api.dida365.com/open/v1/project/${projectId}/task/${taskId}/complete`;
 
   await ticktickRequest(url, {
     method: 'POST',
@@ -169,7 +169,7 @@ export async function deleteTask({
   taskId,
   projectId,
 }: TasksIdsParams): Promise<void> {
-  const url = `https://api.ticktick.com/open/v1/project/${projectId}/task/${taskId}`;
+  const url = `https://api.dida365.com/open/v1/project/${projectId}/task/${taskId}`;
 
   await ticktickRequest(url, {
     method: 'DELETE',

@@ -1,1 +1,1 @@
-export const TICKTICK_API_URL = 'https://api.ticktick.com/open/v1';
+export const TICKTICK_API_URL = 'https://api.dida365.com/open/v1';

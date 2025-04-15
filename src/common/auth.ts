@@ -8,8 +8,8 @@ import { randomBytes } from 'crypto';
 import { z } from 'zod';
 import { successAuthHtml, errorAuthHtml } from './templates.js';
 
-const authUrl = 'https://ticktick.com/oauth/authorize';
-const tokenUrl = 'https://ticktick.com/oauth/token';
+const authUrl = 'https://dida365.com/oauth/authorize';
+const tokenUrl = 'https://dida365.com/oauth/token';
 const defaultScopes = ['tasks:read', 'tasks:write'];
 
 const AuthOptionsSchema = z.object({

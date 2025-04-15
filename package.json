@@ -1,9 +1,9 @@
 {
-  "name": "@alexarevalo.ai/mcp-server-ticktick",
+  "name": "@studentming/Dida-mcp-server",
   "version": "1.1.9",
-  "description": "MCP server for using the TickTick API",
+  "description": "MCP server for using the Dida API",
   "license": "MIT",
-  "author": "Alex Arevalo (https://github.com/alexarevalo9)",
+  "author": "MingStudent (https://github.com/MingStudentSE)",
   "type": "module",
   "bin": {
     "mcp-server-ticktick": "./dist/index.js",
